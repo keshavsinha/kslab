@@ -1,0 +1,113 @@
+
+
+input {
+
+    padding: 10px;
+
+    width: 100%;
+
+    max-width: 300px;
+
+    margin: 10px 0;
+
+    border: 1px solid #ccc;
+
+    border-radius: 5px;
+
+    font-size: 16px;
+
+}
+
+
+
+#strengthBar {
+
+    height: 10px;
+
+    width: 100%;
+
+    max-width: 300px;
+
+    background: #ddd;
+
+    border-radius: 5px;
+
+    margin: 10px 0;
+
+}
+
+
+
+#strengthBar div {
+
+    height: 100%;
+
+    border-radius: 5px;
+
+}
+
+
+
+#strengthText {
+
+    font-size: 14px;
+
+    margin: 10px 0;
+
+}
+
+
+
+#criteria {
+
+    list-style: none;
+
+    padding: 0;
+
+    margin: 0;
+
+    text-align: left;
+
+    max-width: 300px;
+
+    margin: 0 auto;
+
+}
+
+
+
+#criteria li {
+
+    font-size: 14px;
+
+    margin: 5px 0;
+
+}
+
+
+
+#criteria .valid {
+
+    color: green;
+
+}
+
+
+
+#criteria .invalid {
+
+    color: red;
+
+}
+
+
+
+#timeToHack {
+
+    font-size: 14px;
+
+    margin: 10px 0;
+
+    color: #333;
+
+}
