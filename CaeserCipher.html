@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta name="description" content="">
+
+    <meta name="Keshav Sinha" content="">
+
+    
+
+    <title>KSLAB</title>
+
+
+
+    <!-- Bootstrap core CSS -->
+
+    <link href="bootstrap_min.css" rel="stylesheet">
+
+
+
+    <!-- Custom styles for this template -->
+
+    <link href="jumbotron.css" rel="stylesheet">
+
+  </head>
+
+
+
+  <body data-new-gr-c-s-check-loaded="14.1173.0" data-gr-ext-installed="">
+
+
+
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+
+      <a class="navbar-brand" href="">KSLAB</a>
+
+   
+
+
+
+    </nav>
+
+
+
+    <main role="main">
+
+
+
+      <!-- Main jumbotron for a primary marketing message or call to action -->
+
+      <div class="jumbotron">
+
+        <div class="container">
+
+          <h1 class="display-3">Caesar Cipher</h1> <br>
+
+          <p> The Caesar Cipher, named after Julius Caesar, is one of the simplest and most well-known encryption techniques. It works by shifting the letters in a message by a fixed number of positions in the alphabet. Despite its simplicity, the Caesar Cipher provides a foundational example of classical encryption methods and introduces key concepts in the field of cryptography. On this page, you'll learn how the Caesar Cipher works, its historical significance, and how to implement it in various programming languages. Whether you're a beginner in cryptography or just curious about ancient encryption methods, this guide will give you a thorough understanding of the Caesar Cipher.</p>
+
+         
+
+        </div>
+
+      </div>
+
+
+
+      <div class="container">
+
+        <!-- Example row of columns -->
+
+        <div class="row">
+
+          <div class="col-md-6">
+
+            <h2>Enter the Text</h2>
+
+            
+
+             <form id="inputForm">
+
+          <div class="form-group">
+
+            <label for="text">Text:</label>
+
+            <input type="text" class="form-control" id="text" placeholder="Enter text here">
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="shift">Shift:</label>
+
+            <input type="number" class="form-control" id="shift" placeholder="Enter shift value">
+
+          </div>
+
+          <button type="button" class="btn btn-primary" onclick="encrypt()">Encrypt</button>
+
+          <button type="button" class="btn btn-secondary" onclick="decrypt()">Decrypt</button>
+
+        </form>
+
+			
+
+          </div>
+
+             <div class="col-md-6">
+
+                    <h2>Result</h2>
+
+        <p id="result"></p>
+
+        <h2>Details:</h2>
+
+        <table class="table table-striped" id="detailsTable">
+
+          <thead>
+
+            <tr>
+
+              <th>Character</th>
+
+              <th>ASCII Value</th>
+
+              <th>Shifted ASCII Value</th>
+
+              <th>Encrypted/Decrypted Character</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+          </tbody>
+
+        </table>
+
+			   
+
+          </div>
+
+        </div>
+
+
+
+        <hr>
+
+
+
+      </div> <!-- /container -->
+
+
+
+    </main>
+
+
+
+    <footer class="container">
+
+      <p>© Company 2024</p>
+
+    </footer>
+
+
+
+      <script>
+
+        function encrypt() {
+
+    const text = document.getElementById('text').value;
+
+    const shift = parseInt(document.getElementById('shift').value);
+
+    const result = caesarCipher(text, shift);
+
+    document.getElementById('result').innerText = result;
+
+    updateTable(text, shift);
+
+}
+
+
+
+function decrypt() {
+
+    const text = document.getElementById('text').value;
+
+    const shift = parseInt(document.getElementById('shift').value);
+
+    const result = caesarCipher(text, -shift);
+
+    document.getElementById('result').innerText = result;
+
+    updateTable(text, -shift);
+
+}
+
+
+
+function caesarCipher(str, shift) {
+
+    return str.split('').map(char => {
+
+        if (char.match(/[a-z]/i)) {
+
+            const code = char.charCodeAt(0);
+
+            const base = (code >= 65 && code <= 90) ? 65 : 97;
+
+            return String.fromCharCode(((code - base + shift) % 26 + 26) % 26 + base);
+
+        }
+
+        return char;
+
+    }).join('');
+
+}
+
+
+
+function updateTable(str, shift) {
+
+    const tbody = document.querySelector('#detailsTable tbody');
+
+    tbody.innerHTML = ''; // Clear previous results
+
+    str.split('').forEach(char => {
+
+        const row = document.createElement('tr');
+
+        if (char.match(/[a-z]/i)) {
+
+            const code = char.charCodeAt(0);
+
+            const base = (code >= 65 && code <= 90) ? 65 : 97;
+
+            const shiftedCode = ((code - base + shift) % 26 + 26) % 26 + base;
+
+            const shiftedChar = String.fromCharCode(shiftedCode);
+
+
+
+            row.innerHTML = `
+
+                <td>${char}</td>
+
+                <td>${code}</td>
+
+                <td>${shiftedCode}</td>
+
+                <td>${shiftedChar}</td>
+
+            `;
+
+        } else {
+
+            row.innerHTML = `
+
+                <td>${char}</td>
+
+                <td>${char.charCodeAt(0)}</td>
+
+                <td>N/A</td>
+
+                <td>${char}</td>
+
+            `;
+
+        }
+
+        tbody.appendChild(row);
+
+    });
+
+}
+
+    </script>
+
+   </html>
