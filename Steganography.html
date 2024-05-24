@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta name="description" content="">
+
+    <meta name="Keshav Sinha" content="">
+
+    
+
+    <title>KSLAB</title>
+
+
+
+    <!-- Bootstrap core CSS -->
+
+    <link href="bootstrap_min.css" rel="stylesheet">
+
+
+
+    <!-- Custom styles for this template -->
+
+    <link href="jumbotron.css" rel="stylesheet">
+
+  </head>
+
+
+
+  <body data-new-gr-c-s-check-loaded="14.1173.0" data-gr-ext-installed="">
+
+
+
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+
+      <a class="navbar-brand" href="">KSLAB</a>
+
+   
+
+
+
+    </nav>
+
+
+
+    <main role="main">
+
+
+
+      <!-- Main jumbotron for a primary marketing message or call to action -->
+
+      <div class="jumbotron">
+
+        <div class="container">
+
+          <h1 class="display-3">Steganography</h1> <br>
+
+          <p>Steganography is the practice of hiding information in a non-secret message or object so that it's not obvious to human inspection. It's used by governments, hackers, and organizations to conceal data in physical objects and digital media files</p>
+
+         
+
+        </div>
+
+      </div>
+
+
+
+      <div class="container">
+
+        <!-- Example row of columns -->
+
+        <div class="row">
+
+          <div class="col-md-6">
+
+            <h2>Image Selection</h2>
+
+            
+
+            <p>
+
+			 Select a Image：<input type='file' id='file' /><br>
+
+			</p>
+
+			
+
+			<h2>Picture Preview</h2>
+
+            <p><canvas id='canvas' style='width: 300px;'></canvas><br>
+
+			</p>
+
+			
+
+          </div>
+
+             <div class="col-md-6">
+
+            <h2>Heading</h2>
+
+            <p>Steganographic information：<textarea id='message'></textarea><br></p>
+
+            <p><button id='encode' class='submit'>Steganography</button><br></p>
+
+			Steganographic image：<img id='output' style='width: 300px;'><br>
+
+    <button id='decode'>Read the information</button><br>
+
+    Read steganographic content：<div id='message_decoded'></div><br>
+
+    <button id='download'>Download Steganography Image</button>
+
+			   
+
+          </div>
+
+        </div>
+
+
+
+        <hr>
+
+
+
+      </div> <!-- /container -->
+
+
+
+    </main>
+
+
+
+    <footer class="container">
+
+      <p>© Company 2024</p>
+
+    </footer>
+
+
+
+      <script>
+
+        window.onload = function() {
+
+            var input = document.getElementById('file');
+
+            input.addEventListener('change', importImage);
+
+            var encodeButton = document.getElementById('encode');
+
+            encodeButton.addEventListener('click', encode);
+
+            var decodeButton = document.getElementById('decode');
+
+            decodeButton.addEventListener('click', decode);
+
+
+
+            var downloadButton = document.getElementById('download');
+
+            downloadButton.style.display = 'none'; // Hide download button initially
+
+            downloadButton.onclick = function() {
+
+                var canvas = document.getElementById('canvas');
+
+                var link = document.createElement('a');
+
+                link.download = 'stego_image.png';
+
+                link.href = canvas.toDataURL('image/png');
+
+                link.click();
+
+            };
+
+        };
+
+        
+
+        var importImage = function(e) {
+
+            var reader = new FileReader();
+
+            reader.onload = function(event) {
+
+                var img = new Image();
+
+                img.onload = function() {
+
+                    var ctx = document.getElementById('canvas').getContext('2d');
+
+                    ctx.canvas.width = img.width;
+
+                    ctx.canvas.height = img.height;
+
+                    ctx.drawImage(img, 0, 0);
+
+                };
+
+                img.src = event.target.result;
+
+            };
+
+            reader.readAsDataURL(e.target.files[0]);
+
+        };
+
+        
+
+        var encode = function() {
+
+            var message = document.getElementById('message').value;
+
+            var output = document.getElementById('output');
+
+            var canvas = document.getElementById('canvas');
+
+            var ctx = canvas.getContext('2d');
+
+            var pixelCount = ctx.canvas.width * ctx.canvas.height;
+
+            if ((message.length + 1) * 16 > pixelCount * 4 * 0.75) {
+
+                alert('Content is too large, exceeds the maximum writable amount');
+
+                return;
+
+            }
+
+
+
+            var imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+            encodeMessage(imageData.data, message);
+
+            ctx.putImageData(imageData, 0, 0);
+
+            alert('Steganography successful, information has been hidden in the image');
+
+            output.src = canvas.toDataURL();
+
+            document.getElementById('download').style.display = 'inline-block';
+
+        };
+
+
+
+        var decode = function() {
+
+            var ctx = document.getElementById('canvas').getContext('2d');
+
+            var imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+            
+
+            var message = decodeMessage(imageData.data);
+
+            alert(message);
+
+            document.getElementById('message_decoded').innerHTML = message;
+
+        };
+
+
+
+        var getNextLocation = function(history, total) {
+
+            var pos = history.length;
+
+            var loc = Math.abs(pos + 1) % total;
+
+            while (true) {
+
+                if (loc >= total) {
+
+                    loc = 0;
+
+                } else if (history.indexOf(loc) >= 0) {
+
+                    loc++;
+
+                } else if ((loc + 1) % 4 === 0) {
+
+                    loc++;
+
+                } else {
+
+                    history.push(loc);
+
+                    return loc;
+
+                }
+
+            }
+
+        };
+
+
+
+        var setBit = function(number, location, bit) {
+
+            return (number & ~(1 << location)) | (bit << location);
+
+        };
+
+
+
+        var getBitsFromNumber = function(number) {
+
+            var bits = [];
+
+            for (var i = 0; i < 16; i++) {
+
+                bits.push(getBit(number, i));
+
+            }
+
+            return bits;
+
+        };
+
+
+
+        var getBit = function(number, location) {
+
+            return ((number >> location) & 1);
+
+        };
+
+
+
+        var getMessageBits = function(message) {
+
+            var messageBits = [];
+
+            for (var i = 0; i < message.length; i++) {
+
+                var code = message.charCodeAt(i);
+
+                messageBits = messageBits.concat(getBitsFromNumber(code));
+
+            }
+
+            return messageBits;
+
+        };
+
+
+
+        var encodeMessage = function(colors, message) {
+
+            var messageBits = getBitsFromNumber(message.length);
+
+            messageBits = messageBits.concat(getMessageBits(message));
+
+            var history = [];
+
+            var pos = 0;
+
+            while (pos < messageBits.length) {
+
+                var loc = getNextLocation(history, colors.length);
+
+                colors[loc] = setBit(colors[loc], 0, messageBits[pos]);
+
+                while ((loc + 1) % 4 !== 0) {
+
+                    loc++;
+
+                }
+
+                colors[loc] = 255;
+
+                pos++;
+
+            }
+
+        };
+
+     
+
+        var decodeMessage = function(colors) {
+
+            var history = [];
+
+            var messageSize = getNumberFromBits(colors, history);
+
+            if ((messageSize + 1) * 16 > colors.length * 0.75) {
+
+                return '';
+
+            }
+
+            var message = [];
+
+            for(var i = 0; i < messageSize; i++) {
+
+                var code = getNumberFromBits(colors, history);
+
+                message.push(String.fromCharCode(code));
+
+            }
+
+            return message.join('');
+
+        };
+
+
+
+        var getNumberFromBits = function(bytes, history) {
+
+            var number = 0;
+
+            var pos = 0;
+
+            while (pos < 16) {
+
+                var loc = getNextLocation(history, bytes.length);
+
+                var bit = getBit(bytes[loc], 0);
+
+                number = setBit(number, pos, bit);
+
+                pos++;
+
+            }
+
+            return number;
+
+        };
+
+    </script>
+
+   </html>
